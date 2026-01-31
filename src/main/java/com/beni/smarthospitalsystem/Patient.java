@@ -29,7 +29,7 @@ public abstract class Patient implements Identifiable, Comparable<Patient>{
     }
     @Override
     public String toString() {
-        return "ID: "+this.id+" Ime: "+this.name+" starots: "+this.age+" stopnja nujnosti: "+this.severityLevel;
+        return "ID: "+this.id+" Ime: "+this.name+" starots: "+this.age+" stopnja nujnosti: "+this.severityLevel+" ";
     }
     @Override
     public int compareTo(Patient other) {

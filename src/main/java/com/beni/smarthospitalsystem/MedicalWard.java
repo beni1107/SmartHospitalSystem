@@ -5,6 +5,7 @@
 package com.beni.smarthospitalsystem;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
@@ -29,15 +30,47 @@ public class MedicalWard<T extends Patient & Identifiable> {
     public void admitPatient(T patient) throws WardAtCapacityException{
        long criticalPatients = patients.stream()
                 .filter(p->p instanceof InPatient)
-                .filter(p->((InPatient)p).isCritical).count();
-       if(criticalPatients > 3) {
+                .filter(p->((InPatient)p).isIsCritical()).count();
+       if(criticalPatients > 30) {
            System.out.println("WARNING: HIGH number of critical patients in ward");
        }
-        
-        
-        if(this.maxCapacity >= this.patients.size()) {
+
+        if(this.patients.size() >= this.maxCapacity) {
            throw new WardAtCapacityException(maxCapacity);
         }
         patients.add(patient);
+    }
+    
+    public void dischargeRecovered() {
+        Iterator<T> it = patients.iterator();
+        
+        while(it.hasNext()) {
+            if(it.next().getSeverityLevel() == 0) {
+               
+                it.remove();
+            }
+        }
+          
+    }
+    public void printStatistics() {
+        double averageAge = patients.stream().mapToInt(p->p.getAge()).average().orElse(0.0);
+        System.out.println("Average Age is: "+averageAge);
+        
+        long maxAge = patients.stream().mapToInt(p->p.getAge()).max().orElse(0);
+        System.out.println("Max age is : "+maxAge);
+        
+    
+    }
+    public void printAll() {
+        this.patients.stream()
+                .map(p ->p.toString()).forEach(System.out::println);
+    }
+    public void printReportSevAbove8 () {
+        this.patients.stream()
+                .filter(p -> p.getSeverityLevel() > 8)
+                .map(p -> "URGENT: " + p.getName() + " | " + 
+                (p instanceof InPatient ? "Room: " + ((InPatient)p).getRoomNumber() : "Outpatient"))
+                .forEach(System.out::println);
+   
     }
 }
