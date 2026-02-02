@@ -5,9 +5,12 @@
 package com.beni.smarthospitalsystem;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -72,5 +75,43 @@ public class MedicalWard<T extends Patient & Identifiable> {
                 (p instanceof InPatient ? "Room: " + ((InPatient)p).getRoomNumber() : "Outpatient"))
                 .forEach(System.out::println);
    
+    }
+    
+    public void printEmergencySummary() {
+        
+         this.patients.stream()
+                    .filter(p->p.getSeverityLevel() > 8)
+                    .map(p->p.getName()).collect(Collectors.toList()).forEach(System.out::println);
+    
+           
+          
+    }
+    
+    public void findTopPriorityPatient() {
+        this.patients.stream()
+                .max(Comparator.comparingInt(p->p.getSeverityLevel())).ifPresent(p-> System.out.println(p.getName()));
+    }
+    public Map<String, List<T>> getAgeGroupReport (){
+        
+        
+        Map<String, List<T>> tmp =this.patients.stream()
+            .collect(Collectors.groupingBy((T p) -> {
+                if(p.getAge() < 18) return "Minor";
+                if(p.getAge() <65) return "Adult";
+                return "Senior";
+            }));
+        
+        return tmp;
+    }
+    
+    public Map<String, List<T>> getHighRiskSubGroup() {
+        return this.patients.stream()
+                .filter( p -> p.getSeverityLevel() <= 7)
+                .collect(Collectors.groupingBy( (T p) ->{
+                    if (p.getClass().getSimpleName().equals("InPatient")) {
+                        return "InPatient";
+                    }
+                    return "OutPatient";
+                }));
     }
 }

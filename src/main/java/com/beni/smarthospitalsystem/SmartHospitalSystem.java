@@ -4,7 +4,12 @@
 
 package com.beni.smarthospitalsystem;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -19,10 +24,10 @@ public class SmartHospitalSystem {
         for(int i= 0; i<52;i++) {
             try {
                 if (r.nextInt(2) == 0 ) {
-                    md.admitPatient(new InPatient(Beni.randomID(), Beni.randomName(), r.nextInt(65), r.nextInt(11),
+                    md.admitPatient(new InPatient(Beni.randomID(), Beni.randomName(), r.nextInt(90), r.nextInt(11),
                             r.nextInt(7), r.nextBoolean()));
                 }else {
-                    md.admitPatient(new OutPatient(Beni.randomID(),Beni.randomName(),r.nextInt(65),r.nextInt(11)));
+                    md.admitPatient(new OutPatient(Beni.randomID(),Beni.randomName(),r.nextInt(90),r.nextInt(11)));
                 }
             }catch (WardAtCapacityException e) {
                 System.err.println(e.getCurrentPatientCount());
@@ -40,7 +45,22 @@ public class SmartHospitalSystem {
         md.printAll();
         System.out.println("");
         System.out.println("-- END OF PRINT ALL --");
+        System.out.println("");
+        System.out.println("-- EMERGENCY PATIENTS --");
+        System.out.println("");
+        md.printEmergencySummary();
+        System.out.println("");
+        System.out.println("-- END EMERGENCY PATIENTS --");
+        System.out.println("-- TOP PRIORITY PERSON --");
+        md.findTopPriorityPatient();
+     
         
+        md.getAgeGroupReport().forEach((group, list) -> {
+            System.out.println("Category: "+group+" Size: "+list.size());
+            list.forEach(p -> System.out.println(p.getName()));
+            System.out.println();
+        });
+    
     }
    
 }
