@@ -106,12 +106,54 @@ public class MedicalWard<T extends Patient & Identifiable> {
     
     public Map<String, List<T>> getHighRiskSubGroup() {
         return this.patients.stream()
-                .filter( p -> p.getSeverityLevel() <= 7)
-                .collect(Collectors.groupingBy( (T p) ->{
-                    if (p.getClass().getSimpleName().equals("InPatient")) {
-                        return "InPatient";
-                    }
-                    return "OutPatient";
-                }));
+                .filter( p -> p.getSeverityLevel() > 7)
+                .collect(Collectors.groupingBy( (T p) -> p.getClass().getSimpleName()));
     }
+    
+    public Map<String, Long> countPatients() {
+        return this.patients.stream()
+                   .collect(Collectors.groupingBy((T p) -> p.getClass().getSimpleName(),Collectors.counting()));
+                   
+    }
+    
+    public List<String> getSeniorEmergencyNames() {
+        
+    return    this.patients.stream()
+                .filter(p -> p.getAge() > 65 && p.getSeverityLevel() > 8)
+                .map(p -> p.getName())
+                .collect(Collectors.toList());
+    }
+    public List<String> criticalInPatients() {
+        
+    return      this.patients.stream()
+               .filter(p -> p instanceof InPatient)
+               .filter(p -> ((InPatient) p).isIsCritical())
+               .map(p -> p.getName())
+               .collect(Collectors.toList());
+                
+    }
+    
+    public Map<String, Double> averageAgeSeverinity() {
+        
+       return     this.patients.stream()
+                    .collect(Collectors.groupingBy(p -> p.getClass().getSimpleName(), 
+                            Collectors.averagingInt((T p) -> p.getSeverityLevel())));
+                    
+    }
+    
+    public List<Integer> stableSeniors() {
+        
+      return      this.patients.stream()
+                    .filter(p -> p.getAge() > 70 && p.getSeverityLevel() < 3)
+                    .map(p -> Integer.parseInt(p.getId()))
+                    .collect(Collectors.toList());
+                    
+                   
+    }
+    public void inPatientCriticalState() {
+        
+            this.patients.stream()
+                    .filter(p -> p instanceof InPatient)
+                    .filter((InPatient ip) -> ip.isIsCritical());
+                    
 }
